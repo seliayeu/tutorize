@@ -3,25 +3,25 @@ import { useContext, useEffect, useState } from 'react';
 import SignIn from './pages/SignIn/index'
 import Home from './pages/Home/index'
 import SignUp from './pages/SignUp/index'
-import { UserContext } from './userContext'
+import { AuthContext } from './userContext'
 import { Navigate, useLocation } from 'react-router';
-import userServices from './services/userServices';
+// import userServices from './services/userServices';
 
 
 const App = () => {
   return (
-    <UserProvider>
+    <AuthProvider>
       <Routes>
-        <Route path="/" element={<UserRequired alt="/signin"><Home /></UserRequired>} />
-        <Route path="/signin" element={<UserRestricted alt="/"><SignIn /></UserRestricted>} />
-        <Route path="/signup" element={<UserRestricted alt="/"><SignUp /></UserRestricted>} />
+        <Route path="/" element={<AuthRequired alt="/signin"><Home /></AuthRequired>} />
+        <Route path="/signin" element={<AuthRestricted alt="/"><SignIn /></AuthRestricted>} />
+        <Route path="/signup" element={<AuthRestricted alt="/"><SignUp /></AuthRestricted>} />
       </Routes>
-    </UserProvider>
+    </AuthProvider>
 
   );
 }
 
-const UserProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
   const [ user, setUser ] = useState()
 
   useEffect(() => {
@@ -41,11 +41,11 @@ const UserProvider = ({ children }) => {
 
   const value = { user, login, logout }
 
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
-const UserRequired = ({ alt, children }) => {
-  const auth = useContext(UserContext)
+const AuthRequired = ({ alt, children }) => {
+  const auth = useContext(AuthContext)
   const location = useLocation()
 
   if (!auth.user) {
@@ -55,8 +55,8 @@ const UserRequired = ({ alt, children }) => {
   return children
 }
 
-const UserRestricted = ({ alt, children }) => {
-  const auth = useContext(UserContext) 
+const AuthRestricted = ({ alt, children }) => {
+  const auth = useContext(AuthContext) 
   const location = useLocation()
 
   if (auth.user && auth.user !== {}) {
