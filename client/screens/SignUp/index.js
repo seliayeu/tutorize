@@ -1,5 +1,6 @@
  import React from 'react';
  import { Button, TextInput, View } from 'react-native';
+import authService from '../../services/authService';
  import { Formik } from 'formik';
  import * as Yup from 'yup'
 
@@ -15,15 +16,19 @@
  })
   
 const SignUp = () => {
+  const handleSignUp = async (values) => {
+    console.log(values)
+    await authService.signUp({ ...values }, () => {})
+  }
+  
   return (
     <>
       <Formik
-          validationSchema={signUpValidationSchema}
           initialValues={{ 
             username: '',
             password: '',
           }}
-        onSubmit={values => console.log(values)}
+        onSubmit={values => handleSignUp(values)}
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
           <View>
@@ -37,7 +42,10 @@ const SignUp = () => {
               onBlur={handleBlur('password')}
               value={values.password}
             />
-            <Button onPress={handleSubmit} title="Submit" />
+            <Button 
+              onPress={handleSubmit}
+              title="submit"
+            />
           </View>
         )}
       </Formik>

@@ -45,12 +45,12 @@ const SignIn = ({ navigation }) => {
   return (
     <>
       <Formik
-          validationSchema={signInValidationSchema}
+          // validationSchema={signInValidationSchema}
           initialValues={{ 
             username: '',
             password: '',
           }}
-        onSubmit={values => console.log(values)}
+        onSubmit={values => handleSignIn(values)}
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
           <View>

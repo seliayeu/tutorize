@@ -11,6 +11,9 @@ import Profile from "./screens/Profile";
 import SignIn from "./screens/SignIn";
 import SignUp from "./screens/SignUp";
 import Chat from "./screens/Chat";
+import axios from 'axios';
+
+axios.defaults.baseURL = 'http://127.0.0.1:5000';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
