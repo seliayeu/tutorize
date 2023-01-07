@@ -1,7 +1,9 @@
-from models import db, User, Course, ChatRoom, Message
+from models import db, User, Course, ChatRoom, Message, Listing
 import hashlib
 from flask_jwt_extended import create_access_token
 import uuid
+import time
+from flask import jsonify
 
 def _hash_password(username, password):
     return hashlib.sha256((username+password).encode('utf-8')).hexdigest()
@@ -63,3 +65,31 @@ def send_message(username, recipient, content, timestamp):
         db.session.add(ChatRoom(user=recipient, id=uid))
         db.session.add(Message(chatroom=chatroom, user=username, content=content, timestamp=timestamp))
         db.session.commit()
+
+
+def create_listing(username, subjects, location_lat, location_long):
+    listing = db.session.query(Listing).filter_by(username=username).first()
+
+    if listing:
+        listing.subjects = ','.join(subjects)
+        listing.location_lat = location_lat
+        listing.location_long = location_long
+        listing.last_online = time.time()
+        db.session.commit()
+
+    else:
+        listing = Listing(username=username, subjects=','.join(subjects), location_lat=location_lat, location_long=location_long, last_online=int(time.time()))
+        db.session.add(listing)
+        db.session.commit()
+    return jsonify(username=username, subjects=','.join(subjects), location_lat=location_lat, location_long=location_long, last_online=int(time.time()))
+
+
+def update_listing(username, location_lat, location_long):
+    listing = db.session.query(Listing).filter_by(username=username).first()
+
+    if listing:
+        listing.location_lat = location_lat
+        listing.location_long = location_long
+        listing.last_online = int(time.time())
+        db.session.commit()
+        return jsonify(username=username, subjects=listing.subjects, location_lat=location_lat, location_long=location_long, last_online=listing.last_online)
