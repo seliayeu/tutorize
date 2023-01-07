@@ -1,9 +1,8 @@
-
 import axios from 'axios'
+const baseUrl = '/api'
 
 const signIn = async (credentials, callback) => {
-  console.log("arrr")
-  const response = await axios.post(`${baseUrl}/login/`, credentials)
+  const response = await axios.post(`${baseUrl}/signin/`, credentials)
   if (response.status === 200) {
     callback(credentials, response.data)
   }
@@ -11,13 +10,13 @@ const signIn = async (credentials, callback) => {
 }
 
 const signUp = async (credentials, callback) => {
-  const response = await axios.post(`${baseUrl}/register/`, credentials)
+  const response = await axios.post(`${baseUrl}/signup/`, credentials)
   if (response.status === 200) {
     callback(credentials, response.data)
   }
   return response.data
 }
 
-const authServices = { login, register }
+const authServices = { signIn, signUp }
 
 export default authServices
