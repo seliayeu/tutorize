@@ -1,11 +1,12 @@
 import hashlib
-from db_interface import create_user, login_user
 import os
-from models import db, Course, setup
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import create_access_token, JWTManager
+
+from db_interface import create_user, get_courses, login_user
 from dotenv import load_dotenv
+from flask import Flask, jsonify, request
+from flask_jwt_extended import JWTManager, create_access_token
+from flask_sqlalchemy import SQLAlchemy
+from models import Course, db, setup
 
 load_dotenv()
 
@@ -41,6 +42,11 @@ def login():
         return jsonify(token=token), 200
     else:
         return jsonify(message='Access Denied'), 401
+
+
+@app.route('/courses', methods=["GET"])
+def get():
+    return jsonify(courses=get_courses()), 200
 
 
 if __name__ == '__main__':
