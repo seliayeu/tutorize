@@ -1,7 +1,7 @@
 import hashlib
 import os
 
-from db_interface import create_user, get_courses, login_user, get_user_chatrooms, get_user_chat_history, send_message
+from db_interface import create_user, get_courses, login_user, get_user_chatrooms, get_user_chat_history, send_message, create_listing, update_listing
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
@@ -9,11 +9,13 @@ from flask_sqlalchemy import SQLAlchemy
 from models import Course, db, setup
 from flask_socketio import SocketIO
 import time
+from flask_cors import CORS
 
 load_dotenv()
 
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(os.getcwd(), 'database.db')
 app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET_KEY')
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 60*60*24
@@ -80,12 +82,26 @@ def send_message_handler():
     return jsonify(success=True), 200
 
 
-@app.route('/live', methods=["POST"])
+@app.route('/listing', methods=["POST"])
 @jwt_required()
-def live_ping():
+def add_listing():
+    username = get_jwt_identity()
     subjects = request.json['subjects']
     location_lat = request.json['location_lat']
     location_long = request.json['location_long']
+    listing = create_listing(username, subjects, location_lat, location_long)
+    return listing, 200
+
+
+@app.route('/ping', methods=["POST"])
+@jwt_required()
+def ping():
+    username = get_jwt_identity()
+    location_lat = request.json['location_lat']
+    location_long = request.json['location_long']
+    listing = update_listing(username, location_lat, location_long)
+    return listing, 200
+
 
 
 if __name__ == '__main__':
