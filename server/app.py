@@ -5,8 +5,7 @@ from db_interface import create_user, get_courses, login_user, get_user_chatroom
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from flask_sqlalchemy import SQLAlchemy
-from models import Course, db, setup
+from models import db, setup
 from flask_socketio import SocketIO
 import time
 from flask_cors import CORS
@@ -15,7 +14,8 @@ load_dotenv()
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={'/*': {'origins': ['*']}}, support_credentials=True)
+app.config['CORS_HEADERS'] = 'Content-Type'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(os.getcwd(), 'database.db')
 app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET_KEY')
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 60*60*24
