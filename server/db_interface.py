@@ -64,7 +64,7 @@ def send_message(username, recipient, content, timestamp):
         uid = str(uuid.uuid4())
         db.session.add(ChatRoom(user=username, id=uid))
         db.session.add(ChatRoom(user=recipient, id=uid))
-        db.session.add(Message(chatroom=chatroom, user=username, content=content, timestamp=timestamp))
+        db.session.add(Message(chatroom=uid, user=username, content=content, timestamp=timestamp))
         db.session.commit()
         return uid
 
