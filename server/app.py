@@ -54,7 +54,7 @@ def get():
     return jsonify(courses=get_courses()), 200
 
 
-@app.route('/chatrooms', methods=["GET"])
+@app.route('/chatrooms', methods=["GET", "POST"])
 @jwt_required()
 def get_chatrooms():
     username = get_jwt_identity()
