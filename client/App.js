@@ -12,6 +12,7 @@ import SignIn from "./screens/SignIn";
 import SignUp from "./screens/SignUp";
 import Chat from "./screens/Chat";
 import axios from 'axios';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 axios.defaults.baseURL = 'http://127.0.0.1:5000';
 
@@ -72,11 +73,13 @@ const ConditionalNav = () => {
 
 const App = () => {
   return (
-    <AuthProvider>     
-      <NavigationContainer>
-        <ConditionalNav />
-      </NavigationContainer>
-    </AuthProvider>
+    <PaperProvider>
+      <AuthProvider>     
+        <NavigationContainer>
+          <ConditionalNav />
+        </NavigationContainer>
+      </AuthProvider>
+    </PaperProvider>
   );
 }
 
