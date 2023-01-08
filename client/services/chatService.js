@@ -15,9 +15,7 @@ export const fetchChatHistory = async (jwtToken, chatroomId) => {
   return await axios.post(`${baseUrl}/chat_history`, { chatroom_id: chatroomId }, config);
 };
 
-const sendMessage = async (jwtToken, recipient, content) => {
-  // idk how to get current user
-  const current_user = '';
+export const sendMessage = async (jwtToken, recipient, content) => {
   const config = {
     headers: { Authorization: `Bearer ${jwtToken}` },
   };

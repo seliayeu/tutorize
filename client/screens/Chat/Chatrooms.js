@@ -1,13 +1,14 @@
 import { useContext, useEffect, useState } from 'react';
-import { Modal, Pressable, Text, TextInput } from 'react-native';
+import { Button, Modal, Pressable, Text, TextInput, View } from 'react-native';
 import { AuthContext } from '../../authContext';
-import { fetchChatHistory } from '../../services/chatService';
+import { fetchChatHistory, sendMessage } from '../../services/chatService';
 
 const ChatHistory = (props) => {
-  const { chatroom_id, isOpen, setIsOpen } = props;
+  const { chatroom_id, isOpen, setIsOpen, recipient } = props;
   const auth = useContext(AuthContext);
   const token = auth.user.token;
   const [chatHistory, setChatHistory] = useState([]);
+  const [messageContent, setMessageContent] = useState('');
 
   useEffect(() => {
     if (chatroom_id != null) {
@@ -17,6 +18,17 @@ const ChatHistory = (props) => {
         console.log(ch);
         setChatHistory(ch);
       });
+
+      const n = setInterval(() => {
+        fetchChatHistory(token, chatroom_id).then((resp) => {
+          const ch = resp.data;
+          ch.sort((a, b) => a.timestamp - b.timestamp);
+          console.log(ch);
+          setChatHistory(ch);
+        });
+      }, 1000 * 30);
+
+      return () => clearInterval(n);
     }
   }, [fetchChatHistory, setChatHistory, chatroom_id]);
 
@@ -40,6 +52,22 @@ const ChatHistory = (props) => {
           );
         }
       })}
+      <View style={{ flexDirection: 'row', marginTop: 'auto', alignSelf: 'stretch', padding: '10px' }}>
+        <TextInput
+          style={{ border: '1px black solid', width: '100%', padding: '10px' }}
+          placeholder='Message'
+          value={messageContent}
+          onChangeText={setMessageContent}
+        />
+        <Button
+          title='send'
+          onPress={() => {
+            setChatHistory((prev) => [...prev, { content: messageContent, user: auth.user.username }]);
+            sendMessage(token, recipient, messageContent);
+            setMessageContent('');
+          }}
+        />
+      </View>
     </Modal>
   );
 };
@@ -48,6 +76,7 @@ export const Chatrooms = (props) => {
   const { chatrooms, currentUser } = props;
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatroomId, setChatroomId] = useState(null);
+  const [recipient, setRecipient] = useState(null);
 
   return (
     <div>
@@ -62,13 +91,14 @@ export const Chatrooms = (props) => {
             onClick={() => {
               setIsChatOpen(true);
               setChatroomId(id);
+              setRecipient(chatroom_name[0]);
             }}
           >
             <Text>{chatroom_name}</Text>
           </div>
         );
       })}
-      <ChatHistory chatroom_id={chatroomId} isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
+      <ChatHistory chatroom_id={chatroomId} isOpen={isChatOpen} setIsOpen={setIsChatOpen} recipient={recipient} />
     </div>
   );
 };
