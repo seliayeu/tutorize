@@ -31,7 +31,6 @@ const Home = ({ navigation }) => {
   }
 
   const handleFindTutors = async (values) => {
-    values = values.subjects.split(" ")
     const tutors = await findTutors({ subject: values.subject })
     console.log(tutors)
   }

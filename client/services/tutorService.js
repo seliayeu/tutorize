@@ -9,8 +9,5 @@ export const addListing = async ({ token, locationLat, locationLong, subjects}) 
 };
 
 export const findTutors = async ({ subject}) => {
-  const config = {
-    headers: { Authorization: `Bearer ${jwtToken}` },
-  };
-  return await axios.post(`${baseUrl}/find`, { subject }, config);
+  return await axios.post(`${baseUrl}/find`, { subject }, {});
 };
