@@ -1,21 +1,39 @@
 import { Text, Modal, Button, View, Pressable, TextInput, FlatList } from 'react-native';
-import React, { useState } from "react";
- import { Formik } from 'formik';
+import React, { useState, useEffect, useContext, useReducer } from "react";
+import { Formik } from 'formik';
+import { addListing, findTutors } from "../../services/tutorService"
+import { AuthContext } from '../../authContext';
+
+import { getCurrentLocation } from '../../utils/geolocation';
 
 const Home = ({ navigation }) => {
   const [ teachModalVisible, setTeachModalVisible ] = useState(false)
   const [ learnModalVisible, setLearnModalVisible ] = useState(false)
   const [ tutorList, setTutorList ] = useState([])
+  const auth = useContext(AuthContext)
 
-  console.log("aa")
+  
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      const loc = await getCurrentLocation();
+      auth.login({ ...auth.user, locationLat: loc.coords.latitude, locationLong: loc.coords.longitude })
+    }, 5 * 1000);
 
-  const handleSubject = (values) => {
-    console.log(values.subjects.split(" "))
+    return () => {
+      clearTimeout(timer);
+    };
+  })
+
+  const handleListing = (values) => {
+    values = values.subjects.split(" ")
+    addListing({ token: auth.user.token, locationLat: auth.user.locationLat, locationLong: auth.user.locationLong, subjects: values })
+    setTeachModalVisible(false)
   }
 
-  const handleFindTutors = (values) => {
-    setLearnModalVisible(false)
-    navigation.navigate("Chat") 
+  const handleFindTutors = async (values) => {
+    values = values.subjects.split(" ")
+    const tutors = await findTutors({ subject: values.subject })
+    console.log(tutors)
   }
 
   return (
@@ -32,11 +50,10 @@ const Home = ({ navigation }) => {
         }}
       >
         <Formik
-            // validationSchema={signInValidationSchema}
             initialValues={{ 
               subjects: '',
             }}
-          onSubmit={values => handleSubject(values)}
+          onSubmit={values => handleListing(values)}
         >
           {({ handleChange, handleBlur, handleSubmit, values }) => (
             <View>

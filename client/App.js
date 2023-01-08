@@ -8,7 +8,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { StyleSheet, Text, View } from 'react-native';
 import Home from "./screens/Home";
 import { useContext, useEffect, useState } from 'react';
-import Profile from "./screens/Profile";
 import SignIn from "./screens/SignIn";
 import SignUp from "./screens/SignUp";
 import Chat from "./screens/Chat";
@@ -36,9 +35,7 @@ const ConditionalNav = () => {
                 : 'ios-information-circle-outline';
             } else if (route.name === 'Chat') {
               iconName = focused ? 'ios-list' : 'ios-list-outline';
-            } else if (route.name === 'Profile') {
-              iconName = focused ? 'ios-list' : 'ios-list-outline';
-            }
+            } 
 
             // You can return any component that you like here!
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -49,7 +46,6 @@ const ConditionalNav = () => {
       >
         <Tab.Screen name="Home" component={Home} />
         <Tab.Screen name="Chat" component={Chat} />
-        <Tab.Screen name="Profile" component={Profile} />
       </Tab.Navigator>
     )
   } else {
@@ -110,20 +106,11 @@ const AuthProvider = ({ children }) => {
 
     tryGetUser();
 
-    // const timer = setTimeout(() => setShow(true), delay * 5000);
-
-    // this will clear Timeout
-    // when component unmount like in willComponentUnmount
-    // and show will not change to true
-    // return () => {
-    //   clearTimeout(timer1);
-    // };
 
   }, []);
 
-
   const login = (userObj) => (
-    setUser({ ...userObj, locationLat: user.locationLat, locationLong: user.locationLong })
+    setUser(userObj)
   );
 
   const logout = (userObj) => {

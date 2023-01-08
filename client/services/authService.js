@@ -19,6 +19,13 @@ const signUp = async (credentials, callback) => {
   return response.data
 }
 
-const authServices = { signIn, signUp }
+const ping = async (token, location) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+  return await axios.post(`${baseUrl}/ping`, {location_lat: location.locationLat, location_long: location.locationLong}, config);
+}
+
+const authServices = { signIn, signUp, ping }
 
 export default authServices
