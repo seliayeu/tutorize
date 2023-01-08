@@ -13,7 +13,7 @@ export const NewChatModal = (props) => {
 
   useEffect(() => {
     if (chatroomId != null) {
-      fetchChatHistory(token, chatroom_id).then((resp) => {
+      fetchChatHistory(token, chatroomId).then((resp) => {
         const ch = resp.data;
         ch.sort((a, b) => a.timestamp - b.timestamp);
         console.log(ch);
@@ -21,7 +21,7 @@ export const NewChatModal = (props) => {
       });
 
       const n = setInterval(() => {
-        fetchChatHistory(token, chatroom_id).then((resp) => {
+        fetchChatHistory(token, chatroomId).then((resp) => {
           const ch = resp.data;
           ch.sort((a, b) => a.timestamp - b.timestamp);
           console.log(ch);
