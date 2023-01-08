@@ -1,4 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -89,11 +90,23 @@ const AuthProvider = ({ children }) => {
     token: null
   })
 
-  // useEffect(() => {
-  //   if (localStorage.getItem("token") && localStorage.getItem("username")) {
-  //     setUser(localStorage.getItem("username"));
-  //   }
-  // }, []);
+  useEffect(() => {
+    const tryGetUser = async  () => {
+      try {
+        const value = JSON.parse(await AsyncStorage.getItem('@user'))
+        console.log(value)
+
+        if (value !== null) {
+          setUser({
+            ...value
+          })
+        }
+      } catch(e) {
+        console.log(e)
+      }
+    }
+    tryGetUser();
+  }, []);
 
 
   const login = (user) => (

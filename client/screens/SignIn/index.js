@@ -1,13 +1,13 @@
- import React from 'react';
- import { Button, TextInput, View } from 'react-native';
-
+import React from 'react';
+import { Button, TextInput, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from './../../authContext'
  import { Formik } from 'formik';
  import * as Yup from 'yup'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import authServices from '../../services/authService';
+import authService from '../../services/authService';
 
 
  const signInValidationSchema = Yup.object().shape({
@@ -24,22 +24,28 @@ import authServices from '../../services/authService';
 const SignIn = ({ navigation }) => {
   const auth = useContext(AuthContext);
 
-  const handleSignIn = values => {
-    auth.login({
-      username: "poggers",
-      token: "17",
-    })
-    // await authServices.login({ ...values }, (credentials, data) => {
-    //   localStorage.setItem("email", credentials.email)
-    //   localStorage.setItem("token", data.token)
-    //   localStorage.setItem("id", data.id)
-      
-    //   console.log(localStorage.getItem("email"))
-    //   console.log(localStorage.getItem("token"))
-    //   console.log(localStorage.getItem("id"))
-
-    //   auth.login(credentials.email, () => {})
+  const handleSignIn = async values => {
+    // auth.login({
+    //   username: "poggers",
+    //   token: "17",
     // })
+    console.log({...values})
+    await authService.signIn({ ...values }, async (credentials, data) => {
+      console.log(credentials)
+      console.log()
+      try {
+        console.log("saving...")
+        const jsonValue = JSON.stringify({ ...credentials, ...data })
+        await AsyncStorage.setItem('@user', jsonValue)
+      } catch (e) {
+        console.log("error saving item")
+      }
+        // console.log(localStorage.getItem("email"))
+        // console.log(localStorage.getItem("token"))
+        // console.log(localStorage.getItem("id"))
+
+      auth.login({ ...credentials }, () => {})
+    })
   }
 
   return (
@@ -64,7 +70,7 @@ const SignIn = ({ navigation }) => {
               onBlur={handleBlur('password')}
               value={values.password}
             />
-            <Button onPress={handleSignIn} title="Submit" />
+            <Button onPress={handleSubmit} title="Submit" />
           </View>
         )}
       </Formik>
