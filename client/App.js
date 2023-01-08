@@ -87,7 +87,9 @@ const App = () => {
 const AuthProvider = ({ children }) => {
   const [ user, setUser ] = useState({
     username: null,
-    token: null
+    token: null,
+    locationLat: null,
+    locationLong: null
   })
 
   useEffect(() => {
@@ -105,16 +107,27 @@ const AuthProvider = ({ children }) => {
         console.log(e)
       }
     }
+
     tryGetUser();
+
+    // const timer = setTimeout(() => setShow(true), delay * 5000);
+
+    // this will clear Timeout
+    // when component unmount like in willComponentUnmount
+    // and show will not change to true
+    // return () => {
+    //   clearTimeout(timer1);
+    // };
+
   }, []);
 
 
-  const login = (user) => (
-    setUser(user)
+  const login = (userObj) => (
+    setUser({ ...userObj, locationLat: user.locationLat, locationLong: user.locationLong })
   );
 
-  const logout = (user) => {
-    setUser(null)
+  const logout = (userObj) => {
+    setUser({ username: null, token:null, locationLat: user.locationLat, locationLong: user.locationLong })
   }
 
   const value = { user, login, logout }

@@ -9,30 +9,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import authService from '../../services/authService';
 
-
- const signInValidationSchema = Yup.object().shape({
-   username: Yup
-     .string()
-     .email("Please enter a valid username")
-     .required('Username is required'),
-   password: Yup
-     .string()
-     .min(8, ({ min }) => `Password must be at least ${min} characters`)
-     .required('Password is required'),
- })
-  
 const SignIn = ({ navigation }) => {
   const auth = useContext(AuthContext);
 
   const handleSignIn = async values => {
-    // auth.login({
-    //   username: "poggers",
-    //   token: "17",
-    // })
-    console.log({...values})
     await authService.signIn({ ...values }, async (credentials, data) => {
-      console.log(credentials)
-      console.log()
       try {
         console.log("saving...")
         const jsonValue = JSON.stringify({ ...credentials, ...data })
@@ -75,8 +56,8 @@ const SignIn = ({ navigation }) => {
         )}
       </Formik>
       <Button
-        title="Sign Up"
         onPress={() => navigation.navigate('SignUp')}
+        title="Submit"
       />
     </>
   );
