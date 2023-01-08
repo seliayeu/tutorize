@@ -1,7 +1,7 @@
 import hashlib
 import os
 
-from db_interface import create_user, get_courses, login_user, get_user_chatrooms, get_user_chat_history, send_message, create_listing, update_listing
+from db_interface import create_user, get_courses, login_user, get_user_chatrooms, get_user_chat_history, send_message, create_listing, update_listing, find_tutors_live
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
@@ -102,6 +102,12 @@ def ping():
     listing = update_listing(username, location_lat, location_long)
     return listing, 200
 
+
+@app.route('/find', methods=["POST"])
+def find_tutors():
+    subject = request.json['subject']
+    result = find_tutors_live(int(time.time()), subject)
+    return result, 200
 
 
 if __name__ == '__main__':
