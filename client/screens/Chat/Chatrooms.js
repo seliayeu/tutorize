@@ -78,35 +78,6 @@ export const Chatrooms = (props) => {
   const [chatroomId, setChatroomId] = useState(null);
   const [recipient, setRecipient] = useState(null);
 
-  useEffect(() => {
-    const tryGetChatrooms = async  () => {
-      try {
-        const value = JSON.parse(await AsyncStorage.getItem('@user'))
-        console.log(value)
-
-        if (value !== null) {
-          setUser({
-            ...value
-          })
-        }
-      } catch(e) {
-        console.log(e)
-      }
-    }
-
-    tryGetUser();
-
-    // const timer = setTimeout(() => setShow(true), delay * 5000);
-
-    // this will clear Timeout
-    // when component unmount like in willComponentUnmount
-    // and show will not change to true
-    // return () => {
-    //   clearTimeout(timer1);
-    // };
-
-  }, []);
-
   return (
     <div>
       {chatrooms.map((room) => {

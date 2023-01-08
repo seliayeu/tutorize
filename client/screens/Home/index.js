@@ -24,6 +24,10 @@ const Home = ({ navigation }) => {
     };
   })
 
+  const startChat = (username) => {
+    // navigation.navigate('SignUp', {props: {}})
+  }
+
   const handleListing = (values) => {
     values = values.subjects.split(" ")
     addListing({ token: auth.user.token, locationLat: auth.user.locationLat, locationLong: auth.user.locationLong, subjects: values })
@@ -32,6 +36,7 @@ const Home = ({ navigation }) => {
 
   const handleFindTutors = async (values) => {
     const tutors = await findTutors({ subject: values.subject })
+    setTutorList(tutors.data.map(t => t.username))
     console.log(tutors)
   }
 
@@ -106,7 +111,7 @@ const Home = ({ navigation }) => {
         <Text>learn</Text>
         <FlatList
           data={tutorList}
-          renderItem={({item}) => <Text>{item}</Text>}
+          renderItem={({item}) => <Pressable onPress={startChat(item)}><Text>{item}</Text></Pressable>}
         />
       </Modal>
     </View>
