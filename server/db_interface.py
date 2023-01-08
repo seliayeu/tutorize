@@ -93,3 +93,23 @@ def update_listing(username, location_lat, location_long):
         listing.last_online = int(time.time())
         db.session.commit()
         return jsonify(username=username, subjects=listing.subjects, location_lat=location_lat, location_long=location_long, last_online=listing.last_online)
+
+
+def find_tutors_live(current_time, subject):
+    OFFSET = 60*60  # live within the last hour
+
+    users = db.engine.execute(
+        'select * from listings where ? - last_online <= ? and subjects like ?', current_time, OFFSET, f"%{subject}%"
+    ).all()
+
+    result = []
+    for user in users:
+        result.append({
+            "username": user.username,
+            "subjects": user.subjects.split(','),
+            "last_online": user.last_online,
+            "location_lat": user.location_lat,
+            "location_long": user.location_long,
+        })
+
+    return jsonify(result)
