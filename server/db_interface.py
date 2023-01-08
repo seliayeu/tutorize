@@ -59,12 +59,14 @@ def send_message(username, recipient, content, timestamp):
     if chatroom:
         db.session.add(Message(chatroom=chatroom.id, user=username, content=content, timestamp=timestamp))
         db.session.commit()
+        return chatroom.id
     else:
         uid = str(uuid.uuid4())
         db.session.add(ChatRoom(user=username, id=uid))
         db.session.add(ChatRoom(user=recipient, id=uid))
         db.session.add(Message(chatroom=chatroom, user=username, content=content, timestamp=timestamp))
         db.session.commit()
+        return uid
 
 
 def create_listing(username, subjects, location_lat, location_long):

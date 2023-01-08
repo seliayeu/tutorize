@@ -5,59 +5,74 @@ import { addListing, findTutors } from "../../services/tutorService"
 import { AuthContext } from '../../authContext';
 
 import { getCurrentLocation } from '../../utils/geolocation';
+import { NewChatModal } from './NewChatModal';
 
 const Home = ({ navigation }) => {
-  const [ teachModalVisible, setTeachModalVisible ] = useState(false)
-  const [ learnModalVisible, setLearnModalVisible ] = useState(false)
-  const [ tutorList, setTutorList ] = useState([])
-  const auth = useContext(AuthContext)
+  const [teachModalVisible, setTeachModalVisible] = useState(false);
+  const [learnModalVisible, setLearnModalVisible] = useState(false);
+  const [newChatModalVisible, setNewChatModalVisible] = useState(false);
+  const [newChatTarget, setNewChatTarget] = useState(null);
 
-  
+  const [tutorList, setTutorList] = useState([]);
+  const auth = useContext(AuthContext);
+
   useEffect(() => {
     const timer = setTimeout(async () => {
       const loc = await getCurrentLocation();
-      auth.login({ ...auth.user, locationLat: loc.coords.latitude, locationLong: loc.coords.longitude })
+      auth.login({ ...auth.user, locationLat: loc.coords.latitude, locationLong: loc.coords.longitude });
     }, 5 * 1000);
 
     return () => {
       clearTimeout(timer);
     };
-  })
+  });
 
   const startChat = (username) => {
+    // console.log(username);
+    setNewChatTarget(username);
+    setNewChatModalVisible(true);
     // navigation.navigate('SignUp', {props: {}})
-  }
+  };
 
   const handleListing = (values) => {
-    values = values.subjects.split(" ")
-    addListing({ token: auth.user.token, locationLat: auth.user.locationLat, locationLong: auth.user.locationLong, subjects: values })
-    setTeachModalVisible(false)
-  }
+    values = values.subjects.split(' ');
+    addListing({
+      token: auth.user.token,
+      locationLat: auth.user.locationLat,
+      locationLong: auth.user.locationLong,
+      subjects: values,
+    });
+    setTeachModalVisible(false);
+  };
 
   const handleFindTutors = async (values) => {
-    const tutors = await findTutors({ subject: values.subject })
-    setTutorList(tutors.data.map(t => t.username))
-    console.log(tutors)
-  }
+    const tutors = await findTutors({ subject: values.subject });
+    setTutorList(tutors.data.map((t) => t.username));
+    console.log(tutors);
+  };
 
   return (
     <View>
-      <Button onPress={() => setTeachModalVisible(true)} title="Teach">teach</Button>
-      <Button onPress={() => setLearnModalVisible(true)} title="Learn">learn</Button>
+      <Button onPress={() => setTeachModalVisible(true)} title='Teach'>
+        teach
+      </Button>
+      <Button onPress={() => setLearnModalVisible(true)} title='Learn'>
+        learn
+      </Button>
       <Modal
-        animationType="slide"
+        animationType='slide'
         transparent={false}
         visible={teachModalVisible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
+          Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}
       >
         <Formik
-            initialValues={{ 
-              subjects: '',
-            }}
-          onSubmit={values => handleListing(values)}
+          initialValues={{
+            subjects: '',
+          }}
+          onSubmit={(values) => handleListing(values)}
         >
           {({ handleChange, handleBlur, handleSubmit, values }) => (
             <View>
@@ -66,57 +81,53 @@ const Home = ({ navigation }) => {
                 onBlur={handleBlur('subjects')}
                 value={values.subjects}
               />
-              <Button onPress={handleSubmit} title="Submit" />
+              <Button onPress={handleSubmit} title='Submit' />
             </View>
           )}
         </Formik>
-        <Pressable
-          onPress={() => setTeachModalVisible(!teachModalVisible)}
-        >
+        <Pressable onPress={() => setTeachModalVisible(!teachModalVisible)}>
           <Text>Hide Modal</Text>
         </Pressable>
       </Modal>
       <Modal
-        animationType="slide"
+        animationType='slide'
         transparent={false}
         visible={learnModalVisible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
+          Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}
       >
-        <Pressable
-          onPress={() => setLearnModalVisible(!learnModalVisible)}
-        >
+        <Pressable onPress={() => setLearnModalVisible(!learnModalVisible)}>
           <Text>Hide Modal</Text>
         </Pressable>
         <Formik
-            // validationSchema={signInValidationSchema}
-            initialValues={{ 
-              subject: '',
-            }}
-          onSubmit={values => handleFindTutors(values)}
+          // validationSchema={signInValidationSchema}
+          initialValues={{
+            subject: '',
+          }}
+          onSubmit={(values) => handleFindTutors(values)}
         >
           {({ handleChange, handleBlur, handleSubmit, values }) => (
             <View>
-              <TextInput
-                onChangeText={handleChange('subject')}
-                onBlur={handleBlur('subject')}
-                value={values.subject}
-              />
-              <Button onPress={handleSubmit} title="Submit" />
+              <TextInput onChangeText={handleChange('subject')} onBlur={handleBlur('subject')} value={values.subject} />
+              <Button onPress={handleSubmit} title='Submit' />
             </View>
           )}
         </Formik>
         <Text>learn</Text>
         <FlatList
           data={tutorList}
-          renderItem={({item}) => <Pressable onPress={startChat(item)}><Text>{item}</Text></Pressable>}
+          renderItem={({ item }) => (
+            <Pressable onPress={() => startChat(item)}>
+              <Text>{item}</Text>
+            </Pressable>
+          )}
         />
+        <NewChatModal isOpen={newChatModalVisible} setIsOpen={setNewChatModalVisible} recipient={newChatTarget} />
       </Modal>
     </View>
-
   );
-}
+};
 
 export default Home;

@@ -78,8 +78,8 @@ def send_message_handler():
     to_user = request.json['recipient']
     content = request.json['content']
     timestamp = int(time.time())
-    send_message(from_user, to_user, content, timestamp)
-    return jsonify(success=True), 200
+    cid = send_message(from_user, to_user, content, timestamp)
+    return jsonify(success=True, id=cid), 200
 
 
 @app.route('/listing', methods=["POST"])
